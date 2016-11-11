@@ -30,9 +30,6 @@ $l = \OC::$server->getL10N('files_sharing');
 
 \OCA\Files_Sharing\Helper::registerHooks();
 
-\OCP\Share::registerBackend('file', 'OCA\Files_Sharing\ShareBackend\File');
-\OCP\Share::registerBackend('folder', 'OCA\Files_Sharing\ShareBackend\Folder', 'file');
-
 $application = new \OCA\Files_Sharing\AppInfo\Application();
 $application->registerMountProviders();
 
