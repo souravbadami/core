@@ -38,6 +38,7 @@ use OCP\IConfig;
 use OCP\IUserSession;
 use OCP\IURLGenerator;
 use OCP\Share;
+use OCA\FederatedFileSharing\FederatedShareProvider;
 
 class ShareesController extends OCSController  {
 
@@ -67,6 +68,9 @@ class ShareesController extends OCSController  {
 
 	/** @var \OCP\Share\IManager */
 	protected $shareManager;
+
+	/** @var FederatedShareProvider */
+	protected $federatedShareProvider;
 
 	/** @var bool */
 	protected $shareWithGroupOnly = false;
@@ -114,7 +118,9 @@ class ShareesController extends OCSController  {
 			IUserSession $userSession,
 			IURLGenerator $urlGenerator,
 			ILogger $logger,
-			\OCP\Share\IManager $shareManager) {
+			\OCP\Share\IManager $shareManager,
+			FederatedShareProvider $federatedShareProvider
+		) {
 		parent::__construct($appName, $request);
 
 		$this->groupManager = $groupManager;
@@ -126,6 +132,7 @@ class ShareesController extends OCSController  {
 		$this->request = $request;
 		$this->logger = $logger;
 		$this->shareManager = $shareManager;
+		$this->federatedShareProvider = $federatedShareProvider;
 	}
 
 	/**
@@ -466,6 +473,9 @@ class ShareesController extends OCSController  {
 	 */
 	protected function isRemoteSharingAllowed($itemType) {
 		try {
+			if ($itemType === 'file' || $itemType === 'folder') {
+				return $this->federatedShareProvider->isOutgoingServer2serverShareEnabled();
+			}
 			$backend = Share::getBackend($itemType);
 			return $backend->isShareTypeAllowed(Share::SHARE_TYPE_REMOTE);
 		} catch (\Exception $e) {

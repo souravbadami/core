@@ -38,6 +38,7 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\Share;
+use OCA\FederatedFileSharing\FederatedShareProvider;
 
 /**
  * Class ShareesTest
@@ -95,6 +96,11 @@ class ShareesTest extends TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 
+		$federatedShareProviderMock = $this->getMockBuilder(FederatedShareProvider::class)->disableOriginalConstructor()->getMock();
+		$federatedShareProviderMock->expects($this->any())
+			->method('isOutgoingServer2serverShareEnabled')
+			->willReturn(true);
+
 		$this->sharees = new ShareesController(
 			'files_sharing',
 			$this->request,
@@ -105,7 +111,8 @@ class ShareesTest extends TestCase {
 			$this->session,
 			$this->getMockBuilder(IURLGenerator::class)->disableOriginalConstructor()->getMock(),
 			$this->getMockBuilder(ILogger::class)->disableOriginalConstructor()->getMock(),
-			$this->shareManager
+			$this->shareManager,
+			$federatedShareProviderMock
 		);
 	}
 
@@ -1167,7 +1174,8 @@ class ShareesTest extends TestCase {
 				$this->session,
 				$this->getMockBuilder('OCP\IURLGenerator')->disableOriginalConstructor()->getMock(),
 				$this->getMockBuilder('OCP\ILogger')->disableOriginalConstructor()->getMock(),
-				$this->shareManager
+				$this->shareManager,
+				$this->getMockBuilder(FederatedShareProvider::class)->disableOriginalConstructor()->getMock()
 			])
 			->setMethods(['searchSharees', 'isRemoteSharingAllowed'])
 			->getMock();
@@ -1316,7 +1324,8 @@ class ShareesTest extends TestCase {
 				$this->session,
 				$this->getMockBuilder(IURLGenerator::class)->disableOriginalConstructor()->getMock(),
 				$this->getMockBuilder(ILogger::class)->disableOriginalConstructor()->getMock(),
-				$this->shareManager
+				$this->shareManager,
+				$this->getMockBuilder(FederatedShareProvider::class)->disableOriginalConstructor()->getMock()
 			])
 			->setMethods(['getShareesForShareIds', 'getUsers', 'getGroups', 'getRemote'])
 			->getMock();
