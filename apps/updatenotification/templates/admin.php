@@ -14,7 +14,7 @@
 	$currentChannel = $_['currentChannel'];
 ?>
 <form id="oca_updatenotification_section" class="section">
-	<h2><?php p($l->t('Updater')); ?></h2>
+	<h2 class="app-name"><?php p($l->t('Updater')); ?></h2>
 
 	<?php if($isNewVersionAvailable === true): ?>
 		<strong><?php p($l->t('A new version is available: %s', [$newVersionString])); ?></strong>
